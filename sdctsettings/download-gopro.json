@@ -1,7 +1,7 @@
 {
 	"Name": "download-go-pro",
 	"Image": "harbor.smoa.cc/fayez/cuda121conda:runtime",
-	"Command" : "source ~/.bashrc ; conda activate restormer; cd /dataset/vfayezzhang/test/restormer/Restormer/Defocus_Deblurrring ; export PYTHONPATH=.; python download_data.py --data train-test; python download_data.py --data test --dataset HIDE; python download_data.py --data test --dataset RealBlur_J; python download_data.py --data test --dataset RealBlur_R ; python download_data.py --data train --noise real;",
+	"Command" : "source ~/.bashrc ; conda activate restormer; cd /dataset/vfayezzhang/test/restormer/Restormer/Defocus_Deblurring ; export PYTHONPATH=.; python download_data.py --data train-test; python download_data.py --data test --dataset HIDE; python download_data.py --data test --dataset RealBlur_J; python download_data.py --data test --dataset RealBlur_R ; python download_data.py --data train --noise real;",
 	"GPU" : 8,
 	"Debug" : false,
 	"arch" : "ampere"
