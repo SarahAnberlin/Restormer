@@ -1,0 +1,9 @@
+{
+	"Name": "download-go-pro",
+	"Image": "harbor.smoa.cc/fayez/cuda121conda:runtime",
+	"Command" : "source ~/.bashrc ; conda activate restormer; cd /dataset/vfayezzhang/test/restormer/Restormer/Denoising ; export PYTHONPATH=.; python download_data.py --data train-test --noise gaussian ; python download_data.py --data test --noise gaussian; python download_data.py --data train --noise real ; python download_data.py --noise real --data test --dataset SIDD ; python download_data.py --noise real --data test --dataset DND ; ",
+	"GPU" : 8,
+	"Debug" : false,
+	"arch" : "ampere"
+}
+
