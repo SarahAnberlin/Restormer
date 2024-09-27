@@ -118,6 +118,7 @@ print(f"\n ==> Running {task} with weights {weights}\n ")
 
 with torch.no_grad():
     for file_ in tqdm(files):
+        print(f"Hanlding {file_}")
         if torch.cuda.is_available():
             torch.cuda.ipc_collect()
             torch.cuda.empty_cache()
@@ -180,5 +181,5 @@ with torch.no_grad():
 
     print(f"\nRestored images are saved at {out_dir}")
 
-# python demo.py --task Deraining --input_dir ~/dataset/Rain13k/train/input --result_dir
+# python demo.py --task Deraining --input_dir ~/dataset/Rain13k/train/input --result_dir ~/dataset/Rain13k/restormer_output
 # ~/dataset/Rain13k/restormer_output
