@@ -80,7 +80,7 @@ def get_weights_and_parameters(task, parameters):
 task = args.task
 inp_dir = args.input_dir
 out_dir = os.path.join(args.result_dir, task)
-
+args.tile = 720
 os.makedirs(out_dir, exist_ok=True)
 
 extensions = ['jpg', 'JPG', 'png', 'PNG', 'jpeg', 'JPEG', 'bmp', 'BMP']
