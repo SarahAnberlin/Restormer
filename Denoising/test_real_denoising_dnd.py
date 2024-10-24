@@ -52,13 +52,13 @@ model_restoration = Restormer(**x['network_g'])
 
 checkpoint = torch.load(args.weights)
 model_restoration.load_state_dict(checkpoint['params'])
-print("===>Testing using weights: ",args.weights)
+print("===>Testing using weights: ", args.weights)
 model_restoration.cuda()
 model_restoration = nn.DataParallel(model_restoration)
 model_restoration.eval()
 
 israw = False
-eval_version="1.0"
+eval_version = "1.0"
 
 # Load info
 infos = h5py.File(os.path.join(args.input_dir, 'info.mat'), 'r')
@@ -69,7 +69,7 @@ bb = info['boundingboxes']
 with torch.no_grad():
     for i in tqdm(range(50)):
         Idenoised = np.zeros((20,), dtype=np.object)
-        filename = '%04d.mat'%(i+1)
+        filename = '%04d.mat' % (i + 1)
         filepath = os.path.join(args.input_dir, 'images_srgb', filename)
         img = h5py.File(filepath, 'r')
         Inoisy = np.float32(np.array(img['InoisySRGB']).T)
@@ -79,14 +79,15 @@ with torch.no_grad():
         boxes = np.array(info[ref]).T
 
         for k in range(20):
-            idx = [int(boxes[k,0]-1),int(boxes[k,2]),int(boxes[k,1]-1),int(boxes[k,3])]
-            noisy_patch = torch.from_numpy(Inoisy[idx[0]:idx[1],idx[2]:idx[3],:]).unsqueeze(0).permute(0,3,1,2).cuda()
+            idx = [int(boxes[k, 0] - 1), int(boxes[k, 2]), int(boxes[k, 1] - 1), int(boxes[k, 3])]
+            noisy_patch = torch.from_numpy(Inoisy[idx[0]:idx[1], idx[2]:idx[3], :]).unsqueeze(0).permute(0, 3, 1,
+                                                                                                         2).cuda()
             restored_patch = model_restoration(noisy_patch)
-            restored_patch = torch.clamp(restored_patch,0,1).cpu().detach().permute(0, 2, 3, 1).squeeze(0).numpy()
+            restored_patch = torch.clamp(restored_patch, 0, 1).cpu().detach().permute(0, 2, 3, 1).squeeze(0).numpy()
             Idenoised[k] = restored_patch
 
             if args.save_images:
-                save_file = os.path.join(result_dir_png, '%04d_%02d.png'%(i+1,k+1))
+                save_file = os.path.join(result_dir_png, '%04d_%02d.png' % (i + 1, k + 1))
                 denoised_img = img_as_ubyte(restored_patch)
                 utils.save_img(save_file, denoised_img)
 

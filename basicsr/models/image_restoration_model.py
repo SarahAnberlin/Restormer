@@ -19,6 +19,7 @@ import cv2
 import torch.nn.functional as F
 from functools import partial
 
+
 class Mixing_Augment:
     def __init__(self, mixup_beta, use_identity, device):
         self.dist = torch.distributions.beta.Beta(torch.tensor([mixup_beta]), torch.tensor([mixup_beta]))
@@ -29,13 +30,13 @@ class Mixing_Augment:
         self.augments = [self.mixup]
 
     def mixup(self, target, input_):
-        lam = self.dist.rsample((1,1)).item()
-    
+        lam = self.dist.rsample((1, 1)).item()
+
         r_index = torch.randperm(target.size(0)).to(self.device)
-    
-        target = lam * target + (1-lam) * target[r_index, :]
-        input_ = lam * input_ + (1-lam) * input_[r_index, :]
-    
+
+        target = lam * target + (1 - lam) * target[r_index, :]
+        input_ = lam * input_ + (1 - lam) * input_[r_index, :]
+
         return target, input_
 
     def __call__(self, target, input_):
@@ -44,9 +45,10 @@ class Mixing_Augment:
             if augment < len(self.augments):
                 target, input_ = self.augments[augment](target, input_)
         else:
-            augment = random.randint(0, len(self.augments)-1)
+            augment = random.randint(0, len(self.augments) - 1)
             target, input_ = self.augments[augment](target, input_)
         return target, input_
+
 
 class ImageCleanModel(BaseModel):
     """Base Deblur model for single image deblur."""
@@ -58,8 +60,8 @@ class ImageCleanModel(BaseModel):
 
         self.mixing_flag = self.opt['train']['mixing_augs'].get('mixup', False)
         if self.mixing_flag:
-            mixup_beta       = self.opt['train']['mixing_augs'].get('mixup_beta', 1.2)
-            use_identity     = self.opt['train']['mixing_augs'].get('use_identity', False)
+            mixup_beta = self.opt['train']['mixing_augs'].get('mixup_beta', 1.2)
+            use_identity = self.opt['train']['mixing_augs'].get('use_identity', False)
             self.mixing_augmentation = Mixing_Augment(mixup_beta, use_identity, self.device)
 
         self.net_g = define_network(deepcopy(opt['network_g']))
@@ -70,7 +72,8 @@ class ImageCleanModel(BaseModel):
         load_path = self.opt['path'].get('pretrain_network_g', None)
         if load_path is not None:
             self.load_network(self.net_g, load_path,
-                              self.opt['path'].get('strict_load_g', True), param_key=self.opt['path'].get('param_key', 'params'))
+                              self.opt['path'].get('strict_load_g', True),
+                              param_key=self.opt['path'].get('param_key', 'params'))
 
         if self.is_train:
             self.init_training_settings()
@@ -172,7 +175,7 @@ class ImageCleanModel(BaseModel):
         if self.ema_decay > 0:
             self.model_ema(decay=self.ema_decay)
 
-    def pad_test(self, window_size):        
+    def pad_test(self, window_size):
         scale = self.opt.get('scale', 1)
         mod_pad_h, mod_pad_w = 0, 0
         _, _, h, w = self.lq.size()
@@ -187,7 +190,7 @@ class ImageCleanModel(BaseModel):
 
     def nonpad_test(self, img=None):
         if img is None:
-            img = self.lq      
+            img = self.lq
         if hasattr(self, 'net_g_ema'):
             self.net_g_ema.eval()
             with torch.no_grad():
@@ -248,25 +251,25 @@ class ImageCleanModel(BaseModel):
             torch.cuda.empty_cache()
 
             if save_img:
-                
+
                 if self.opt['is_train']:
-                    
+
                     save_img_path = osp.join(self.opt['path']['visualization'],
                                              img_name,
                                              f'{img_name}_{current_iter}.png')
-                    
+
                     save_gt_img_path = osp.join(self.opt['path']['visualization'],
-                                             img_name,
-                                             f'{img_name}_{current_iter}_gt.png')
+                                                img_name,
+                                                f'{img_name}_{current_iter}_gt.png')
                 else:
-                    
+
                     save_img_path = osp.join(
                         self.opt['path']['visualization'], dataset_name,
                         f'{img_name}.png')
                     save_gt_img_path = osp.join(
                         self.opt['path']['visualization'], dataset_name,
                         f'{img_name}_gt.png')
-                    
+
                 imwrite(sr_img, save_img_path)
                 imwrite(gt_img, save_gt_img_path)
 
@@ -295,7 +298,6 @@ class ImageCleanModel(BaseModel):
             self._log_validation_metric_values(current_iter, dataset_name,
                                                tb_logger)
         return current_metric
-
 
     def _log_validation_metric_values(self, current_iter, dataset_name,
                                       tb_logger):
