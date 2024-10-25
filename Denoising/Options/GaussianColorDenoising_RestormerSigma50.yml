@@ -27,10 +27,10 @@ datasets:
     batch_size_per_gpu: 8
 
     ### -------------Progressive training--------------------------
-    mini_batch_sizes: [8,5,4,2,1,1]             # Batch size per gpu   
-    iters: [92000,64000,48000,36000,36000,24000]
+    mini_batch_sizes: [ 8,5,4,2,1,1 ]             # Batch size per gpu
+    iters: [ 92000,64000,48000,36000,36000,24000 ]
     gt_size: 384   # Max patch size for progressive training
-    gt_sizes: [128,160,192,256,320,384]  # Patch sizes for progressive training.
+    gt_sizes: [ 128,160,192,256,320,384 ]  # Patch sizes for progressive training.
     ### ------------------------------------------------------------
 
     ### ------- Training on single fixed-patch size 128x128---------
@@ -59,9 +59,9 @@ network_g:
   inp_channels: 3
   out_channels: 3
   dim: 48
-  num_blocks: [4,6,6,8]
+  num_blocks: [ 4,6,6,8 ]
   num_refinement_blocks: 4
-  heads: [1,2,4,8]
+  heads: [ 1,2,4,8 ]
   ffn_expansion_factor: 2.66
   bias: False
   LayerNorm_type: BiasFree
@@ -85,9 +85,9 @@ train:
   # 2nd cycle: cosine annealing (3e-4 to 1e-6) for 208k iters.
   scheduler:
     type: CosineAnnealingRestartCyclicLR
-    periods: [92000, 208000]       
-    restart_weights: [1,1]
-    eta_mins: [0.0003,0.000001]   
+    periods: [ 92000, 208000 ]
+    restart_weights: [ 1,1 ]
+    eta_mins: [ 0.0003,0.000001 ]
   
   mixing_augs:
     mixup: true
@@ -98,8 +98,8 @@ train:
     type: AdamW
     lr: !!float 3e-4
     weight_decay: !!float 1e-4
-    betas: [0.9, 0.999]
-  
+    betas: [ 0.9, 0.999 ]
+
   # losses
   pixel_opt:
     type: L1Loss
