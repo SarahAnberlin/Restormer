@@ -24,9 +24,6 @@ from pdb import set_trace as stx
 import numpy as np
 
 parser = argparse.ArgumentParser(description='Test Restormer on your own images')
-parser.add_argument('--input_dir', default='./demo/degraded/', type=str,
-                    help='Directory of input images or path of single image')
-parser.add_argument('--result_dir', default='./demo/restored/', type=str, help='Directory for restored results')
 parser.add_argument('--task', required=True, type=str, help='Task to run', choices=['Motion_Deblurring',
                                                                                     'Single_Image_Defocus_Deblurring',
                                                                                     'Deraining',
@@ -78,23 +75,22 @@ def get_weights_and_parameters(task, parameters):
 
 
 task = args.task
-inp_dir = args.input_dir
-out_dir = os.path.join(args.result_dir, task)
+data_root = '/dataset/vfayezzhang/test/DIR/rf/3-refine-2024-10-27_20:51/visualize/val/'
+
+files = []
+for file in os.listdir(data_root):
+    file_path = os.path.join(data_root, file)
+    if os.path.isfile(file_path) and file.endswith('.png'):
+        files.append(file_path)
+
+files = natsorted(files)
+files = files[:10]
+
+out_dir = '/dataset/vfayezzhang/test/restormer/res/'
 args.tile = 720
 os.makedirs(out_dir, exist_ok=True)
 
 extensions = ['jpg', 'JPG', 'png', 'PNG', 'jpeg', 'JPEG', 'bmp', 'BMP']
-
-if any([inp_dir.endswith(ext) for ext in extensions]):
-    files = [inp_dir]
-else:
-    files = []
-    for ext in extensions:
-        files.extend(glob(os.path.join(inp_dir, '*.' + ext)))
-    files = natsorted(files)
-
-if len(files) == 0:
-    raise Exception(f'No files found at {inp_dir}')
 
 # Get model weights and parameters
 parameters = {'inp_channels': 3, 'out_channels': 3, 'dim': 48, 'num_blocks': [4, 6, 6, 8], 'num_refinement_blocks': 4,
